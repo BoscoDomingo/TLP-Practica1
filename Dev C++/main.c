@@ -19,7 +19,7 @@ int main()
         exit(1);
     }
 
-    printf("\n***Creando el autÃ³mata...***\n");
+    printf("\n***Creando el autómata...***\n");
     char characterRead;
 
     //Set up language automata (it is horrible coding, but moving to a separate function is hard and this is not a C course)
@@ -61,11 +61,11 @@ int main()
     fscanf(automatonFile, "%c", &characterRead); // [0][0] of the automaton
     for (i = 0; i < numberOfStates; i++)
     {
-        printf("i vale: %d\n", i);
+    	printf("i vale: %d\n", i);
         int j = 0;
         while (characterRead != '\n' && j < alphabetLength)
         {
-            printf("\nj vale: %d\n", j);
+        	printf("\nj vale: %d\n", j);
             printf("%c\n", characterRead); //TO-DO DELETE
             if (characterRead == '_')
             {
@@ -122,11 +122,11 @@ int main()
     }
 
     fclose(automatonFile);
-    printf("\nAutÃ³mata configurado con Ã©xito");
+    printf("\nAutómata configurado con éxito");
 
     //Read word and translate
     char inputWord[MAX_LINE_LENGTH];
-    printf("\nPor favor, introduce una palabra con la que probar (mÃ¡ximo %d caracteres) y presiona ENTER. Para salir, introduce \"*SALIR*\":\n", MAX_LINE_LENGTH);
+    printf("\nPor favor, introduce una palabra con la que probar (máximo %d caracteres) y presiona ENTER. Para salir, introduce \"*SALIR*\":\n", MAX_LINE_LENGTH);
     scanf("%s", &inputWord);
     while (inputWord != "*SALIR*")
     { //translate entered word
@@ -151,13 +151,13 @@ int main()
 
             if (translationStrings[currentRow][currentCol] != NULL) //An input may be valid but generate an empty translation
             {
-                printf("\n\tLa traducciÃ³n es: %s", (translationStrings[currentRow][currentCol])); //TO-DO DELETE
+                printf("\n\tLa traducción es: %s", (translationStrings[currentRow][currentCol])); //TO-DO DELETE
                 strcat(translatedWord, translationStrings[currentRow][currentCol]);               //concatenate the translation
             }
 
             currentRow = delta[currentRow][currentCol]; //Se cambia de estado
             if (currentRow == -1)
-            { //TransiciÃ³n no posible
+            { //Transición no posible
                 printf("\nLo sentimos, has introducido una palabra no aceptada. Prueba de nuevo.");
                 correctTranslation = false;
                 break;
@@ -168,14 +168,14 @@ int main()
 
         if (correctTranslation && finalStates[currentRow])
         {
-            printf("\nLa traducciÃ³n es: %s", translatedWord);
+            printf("\nLa traducción es: %s", translatedWord);
         }
         else if (!finalStates[currentRow]) //the current state is not final
         {
-            printf("\nLo sentimos, la palabra no estÃ¡ aceptada por el lenguaje.");
+            printf("\nLo sentimos, la palabra no está aceptada por el lenguaje.");
         }
 
-        printf("\nPor favor, introduce la siguiente palabra con la que probar (mÃ¡ximo %d caracteres) y presiona ENTER. Para salir, introduce \"*SALIR*\":\n", MAX_LINE_LENGTH);
+        printf("\nPor favor, introduce la siguiente palabra con la que probar (máximo %d caracteres) y presiona ENTER. Para salir, introduce \"*SALIR*\":\n", MAX_LINE_LENGTH);
         scanf("%s", &inputWord);
     }
     printf("Saliendo. Gracias por usar nuestro software.");
