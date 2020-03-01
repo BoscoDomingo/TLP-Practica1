@@ -25,8 +25,7 @@ int main()
 
     char translationStrings[MAX_STATES][MAX_ALPHABET_LENGTH][MAX_TRANSLATION_LENGTH]; //The matrix containing the translated string of each state given each input
 
-    printf("\nCreando el autómata...\n");
-    int lineNumber = 0;
+    printf("\n***Creando el autómata...***\n");
     char characterRead;
 
     //Set up language automata (it is horrible coding, but moving to a separate function is hard and this is not a C course)
@@ -57,14 +56,14 @@ int main()
     }
 
     //Automaton setup
-    fscanf(automatonFile, "%d", &characterRead); // [0][0] of the automaton
+    fscanf(automatonFile, "%c", &characterRead); // [0][0] of the automaton
     for (i = 0; i < states; i++)
     {
         int j = 0;
         while (characterRead != "\n" && j < alphabetLength)
         {
             printf("%c\n", characterRead); //TO-DO DELETE
-            if (characterRead = "_")
+            if (characterRead == "_")
             {
                 newDelta[i][j] = NULL;
             }
@@ -72,7 +71,6 @@ int main()
             {
                 newDelta[i][j] = characterRead - '0';
             }
-
             j++;
             scanf(automatonFile, "%c", &characterRead);  // space
             fscanf(automatonFile, "%c", &characterRead); // next character
@@ -80,22 +78,28 @@ int main()
     }
 
     //Translation setup
-    fscanf(automatonFile, "%d", &characterRead); // [0][0] of the translations
+    char stringRead[MAX_LINE_LENGTH];
+    fscanf(automatonFile, "%c", &characterRead); // [0][0][0] of the translations
     for (i = 0; i < states; i++)
     {
         int j = 0;
         while (characterRead != "\n" && j < alphabetLength)
         {
-            printf("%c\n", characterRead); //TO-DO DELETE
-            if (characterRead = "_")
+            while (characterRead != " ")
             {
-                newDelta[i][j] = NULL;
+                printf("%c\n", characterRead);               //TO-DO DELETE
+                strcat(stringRead, characterRead);           //add the character to the string
+                fscanf(automatonFile, "%c", &characterRead); // next character
+            }
+
+            if (stringRead == "_")
+            {
+                newTranslation[i][j] = NULL;
             }
             else
             {
-                newDelta[i][j] = characterRead - '0';
+                newTranslation[i][j] = characterRead - '0';
             }
-
             j++;
             scanf(automatonFile, "%c", &characterRead);  // space
             fscanf(automatonFile, "%c", &characterRead); // next character
@@ -173,47 +177,3 @@ int main()
     printf("Saliendo. Gracias por usar nuestro software.");
     return 0;
 }
-
-/*
-  printf("\nCreando el automata...\n\n");
-    int lineNumber = 0;
-    char characterRead;
-    fscanf(automatonFile, "%c", &characterRead);
-
-    //Set up language automata (it is horrible coding, but moving to a separate function is hard and this is not a C course)
-    while (!feof(automatonFile))
-    {
-    	printf("%c", characterRead);
-        //Check the character read
-        if (characterRead == '\n') //go on to next line
-        {
-            lineNumber++;
-        }else if (characterRead == ' ') //useless, go to next word
-        {}
-        
-		
-        //Insert character to the right place based on lineNumber
-            states = characterRead - '0'; //converting to int, because C is cool like that
-        	fscanf(automatonFile, "%c", &characterRead);
-            alphabetLength = characterRead - '0'; //converting to int, because C is cool like that
-            char newArray[alphabetLength];
-        
-        if (lineNumber == 2) //Alphabet
-        {
-			newArray[indexArray] = characterRead;
-			indexArray ++ ;
-        }
-        else if (lineNumber >= 3 && lineNumber < states) //Automaton rows
-        {
-        }
-        else //Array of final states
-        {
-        }
-        
-        fscanf(automatonFile, "%c", &characterRead);
-    }
-       fclose(automatonFile);
-    printf("\n\nAutomata configurado con exito");
-    printf("\nStates: %d", states);
-    printf("\nAlphabetLength: %d", alphabetLength); 
-*/
