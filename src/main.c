@@ -15,16 +15,6 @@ int main()
     FILE *automatonFile;
     automatonFile = fopen(AUTOMATON_FILENAME, "r");
 
-    int states;                         //the total number of states in M
-    int alphabetLength;                 //the number of different symbols in the alphabet
-    char alphabet[MAX_ALPHABET_LENGTH]; //the symbols accepted by M's Sigma
-    bool finalStates[MAX_STATES];       //[true, false, true, false, false] makes q0 and q2 final
-
-    int delta[MAX_STATES][MAX_ALPHABET_LENGTH]; //Matrix containing states as rows, inputs as columns. With a given state we can know the state to go to next based on a given input
-    char inputToIndex[MAX_ALPHABET_LENGTH];     //The code to turn a symbol from Sigma into an column index for the automaton. E.g. [a, x, y, z] | a = 0, x = 1 in the automaton matrix
-
-    char translationStrings[MAX_STATES][MAX_ALPHABET_LENGTH][MAX_TRANSLATION_LENGTH]; //The matrix containing the translated string of each state given each input
-
     printf("\n***Creando el autómata...***\n");
     char characterRead;
 
@@ -32,17 +22,24 @@ int main()
     //Number of states
     fscanf(automatonFile, "%c", &characterRead);
     printf("%c\n", characterRead);               //TO-DO DELETE
-    states = characterRead - '0';                //convert to int, because C is cool like that
+    int numberOfStates = characterRead - '0';    //the total number of states in M. "-'0'" is to convert to int, because C is cool like that
     fscanf(automatonFile, "%c", &characterRead); //\n
 
     //Number of elements in the alphabet
     fscanf(automatonFile, "%c", &characterRead);
-    printf("%c\n", characterRead);                                //TO-DO DELETE
-    alphabetLength = characterRead - '0';                         //converting to int, because C is cool like that
-    char newAlphabet[alphabetLength];                             //WE NEED TO COPY THIS ARRAY INTO ALPHABET, since it is the right size and will contain the right letters
-    int newDelta[states][alphabetLength];                         //We also need to resize delta since we now know the correct size of the alphabet and the number of states
-    char newTranslation[states][alphabetLength][MAX_LINE_LENGTH]; //We also need to resize translations since we now know the correct size of the alphabet and the number of states
-    fscanf(automatonFile, "%c", &characterRead);                  //\n
+    printf("%c\n", characterRead);            //TO-DO DELETE
+    int alphabetLength = characterRead - '0'; //the number of different symbols in the alphabet
+
+    //We create all the necessary structures
+    int delta[numberOfStates][alphabetLength]; //Matrix containing states as rows, inputs as columns. With a given state we can know the state to go to next based on a given input
+
+    char alphabet[alphabetLength],                                           //the symbols accepted by M's Sigma
+        translationStrings[numberOfStates][alphabetLength][MAX_LINE_LENGTH], //The matrix containing the translated string of each state given each input
+        inputToIndex[MAX_ALPHABET_LENGTH];                                   //The code to turn a symbol from Sigma into an column index for the automaton. E.g. [a, x, y, z] | a = 0, x = 1 in the automaton matrix
+
+    bool finalStates[numberOfStates]; //[true, false, true, false, false] makes q0 and q2 final
+
+    fscanf(automatonFile, "%c", &characterRead); //\n
 
     //Alphabet setup
     int i = 0;
@@ -50,14 +47,14 @@ int main()
     while (characterRead != "\n" && i < alphabetLength)
     {
         printf("%c\n", characterRead); //TO-DO DELETE
-        newAlphabet[i] = characterRead;
+        alphabet[i] = characterRead;
         i++;
         fscanf(automatonFile, "%c", &characterRead); // next character
     }
 
     //Automaton setup
     fscanf(automatonFile, "%c", &characterRead); // [0][0] of the automaton
-    for (i = 0; i < states; i++)
+    for (i = 0; i < numberOfStates; i++)
     {
         int j = 0;
         while (characterRead != "\n" && j < alphabetLength)
@@ -65,11 +62,11 @@ int main()
             printf("%c\n", characterRead); //TO-DO DELETE
             if (characterRead == "_")
             {
-                newDelta[i][j] = NULL;
+                delta[i][j] = NULL;
             }
             else
             {
-                newDelta[i][j] = characterRead - '0';
+                delta[i][j] = characterRead - '0';
             }
             j++;
             scanf(automatonFile, "%c", &characterRead);  // space
@@ -77,15 +74,15 @@ int main()
         }
     }
 
-    //Translation setup
+    /*Translation setup*/
     char stringRead[MAX_LINE_LENGTH];
     fscanf(automatonFile, "%c", &characterRead); // [0][0][0] of the translations
-    for (i = 0; i < states; i++)
+    for (i = 0; i < numberOfStates; i++)         //for each row
     {
         int j = 0;
-        while (characterRead != "\n" && j < alphabetLength)
+        while (characterRead != "\n" && j < alphabetLength) //for each column
         {
-            while (characterRead != " ")
+            while (characterRead != " ") //create the new string
             {
                 printf("%c\n", characterRead);               //TO-DO DELETE
                 strcat(stringRead, characterRead);           //add the character to the string
@@ -94,26 +91,26 @@ int main()
 
             if (stringRead == "_")
             {
-                newTranslation[i][j] = NULL;
+                *translationStrings[i][j] = NULL;
             }
             else
             {
-                newTranslation[i][j] = characterRead - '0';
+                *translationStrings[i][j] = stringRead;
             }
             j++;
-            scanf(automatonFile, "%c", &characterRead);  // space
             fscanf(automatonFile, "%c", &characterRead); // next character
         }
     }
-    fscanf(automatonFile, "%c", &characterRead); // next character
 
     //Final states
+    fscanf(automatonFile, "%c", &characterRead); // next character
     i = 0;
     while (characterRead != "\n" && i < alphabetLength)
     {
         printf("%c\n", characterRead); //TO-DO DELETE
-        newAlphabet[i] = characterRead;
+        finalStates[i] = characterRead == '1' ? true : false;
         i++;
+        scanf(automatonFile, "%c", &characterRead);  // space
         fscanf(automatonFile, "%c", &characterRead); // next character
     }
 
