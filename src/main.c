@@ -5,8 +5,6 @@
 
 #define MAX_TRANSLATION_LENGTH 512 //the maximum number of characters a translated word can have
 #define MAX_LINE_LENGTH 512        //the maximum number of characters a line in any of the input files can have
-#define MAX_ALPHABET_LENGTH 256    //Assuming spaces in between each character
-#define MAX_STATES 256
 
 #define AUTOMATON_FILENAME "Automaton.txt"
 
@@ -35,7 +33,7 @@ int main()
 
     char alphabet[alphabetLength],                                           //the symbols accepted by M's Sigma
         translationStrings[numberOfStates][alphabetLength][MAX_LINE_LENGTH], //The matrix containing the translated string of each state given each input
-        inputToIndex[MAX_ALPHABET_LENGTH];                                   //The code to turn a symbol from Sigma into an column index for the automaton. E.g. [a, x, y, z] | a = 0, x = 1 in the automaton matrix
+        inputToIndex[alphabetLength];                                   //The code to turn a symbol from Sigma into an column index for the automaton. E.g. [a, x, y, z] | a = 0, x = 1 in the automaton matrix
 
     bool finalStates[numberOfStates]; //[true, false, true, false, false] makes q0 and q2 final
 
@@ -44,7 +42,7 @@ int main()
     //Alphabet setup
     int i = 0;
     fscanf(automatonFile, "%c", &characterRead); //first letter
-    while (characterRead != "\n" && i < alphabetLength)
+    while (characterRead != '\n' && i < alphabetLength)
     {
         printf("%c\n", characterRead); //TO-DO DELETE
         alphabet[i] = characterRead;
@@ -57,10 +55,10 @@ int main()
     for (i = 0; i < numberOfStates; i++)
     {
         int j = 0;
-        while (characterRead != "\n" && j < alphabetLength)
+        while (characterRead != '\n' && j < alphabetLength)
         {
             printf("%c\n", characterRead); //TO-DO DELETE
-            if (characterRead == "_")
+            if (characterRead == '_')
             {
                 delta[i][j] = NULL;
             }
@@ -73,6 +71,7 @@ int main()
             fscanf(automatonFile, "%c", &characterRead); // next character
         }
     }
+    fscanf(automatonFile, "%c", &characterRead); // 2nd \n
 
     /*Translation setup*/
     char stringRead[MAX_LINE_LENGTH];
@@ -80,9 +79,9 @@ int main()
     for (i = 0; i < numberOfStates; i++)         //for each row
     {
         int j = 0;
-        while (characterRead != "\n" && j < alphabetLength) //for each column
+        while (characterRead != '\n' && j < alphabetLength) //for each column
         {
-            while (characterRead != " ") //create the new string
+            while (characterRead != ' ') //create the new string
             {
                 printf("%c\n", characterRead);               //TO-DO DELETE
                 strcat(stringRead, characterRead);           //add the character to the string
@@ -105,12 +104,11 @@ int main()
     //Final states
     fscanf(automatonFile, "%c", &characterRead); // next character
     i = 0;
-    while (characterRead != "\n" && i < alphabetLength)
+    while (characterRead != '\n' && i < numberOfStates)
     {
         printf("%c\n", characterRead); //TO-DO DELETE
         finalStates[i] = characterRead == '1' ? true : false;
         i++;
-        scanf(automatonFile, "%c", &characterRead);  // space
         fscanf(automatonFile, "%c", &characterRead); // next character
     }
 
