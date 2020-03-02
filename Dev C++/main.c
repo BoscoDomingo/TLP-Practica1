@@ -19,19 +19,19 @@ int main()
         exit(1);
     }
 
-    printf("\n***Creando el autómata...***\n");
+    printf("\n***Creando el automata...***\n");
     char characterRead;
 
     //Set up language automata (it is horrible coding, but moving to a separate function is hard and this is not a C course)
     //Number of states
     fscanf(automatonFile, "%c", &characterRead);
-    printf("%c\n", characterRead);               //TO-DO DELETE
+    printf("Numero de estados del automata: %c\n", characterRead);               //TO-DO DELETE
     int numberOfStates = characterRead - '0';    //the total number of states in M. "-'0'" is to convert to int, because C is cool like that
     fscanf(automatonFile, "%c", &characterRead); //\n
 
     //Number of elements in the alphabet
     fscanf(automatonFile, "%c", &characterRead);
-    printf("%c\n", characterRead);            //TO-DO DELETE
+    printf("Longitud del alfabeto: %c\n", characterRead);            //TO-DO DELETE
     int alphabetLength = characterRead - '0'; //the number of different symbols in the alphabet
 
     //We create all the necessary structures
@@ -47,26 +47,27 @@ int main()
 
     //Alphabet setup
     int i = 0;
+    printf("Alfabeto: ");
     fscanf(automatonFile, "%c", &characterRead); //first letter
     while (characterRead != '\n' && i < alphabetLength)
     {
-        printf("%c", characterRead); //TO-DO DELETE
+        printf("%c ", characterRead); //TO-DO DELETE
         alphabet[i] = characterRead;
         i++;
         fscanf(automatonFile, "%c", &characterRead); // next character
     }
     printf("\n"); //TO-DO DELETE
 
+
+
+
     //Automaton setup
     fscanf(automatonFile, "%c", &characterRead); // [0][0] of the automaton
     for (i = 0; i < numberOfStates; i++)
     {
-    	printf("i vale: %d\n", i);
         int j = 0;
         while (characterRead != '\n' && j < alphabetLength)
         {
-        	printf("\nj vale: %d\n", j);
-            printf("%c\n", characterRead); //TO-DO DELETE
             if (characterRead == '_')
             {
                 delta[i][j] = -1;
@@ -76,11 +77,22 @@ int main()
                 delta[i][j] = characterRead - '0';
             }
             j++;
-            scanf(automatonFile, "%c", &characterRead);  // space
+            fscanf(automatonFile, "%c", &characterRead);  // space  
             fscanf(automatonFile, "%c", &characterRead); // next character
         }
     }
-    fscanf(automatonFile, "%c", &characterRead); // 2nd \n
+
+	//Mostrar matriz del automata L por pantalla
+	printf("\nAutomata del lenguaje L:\n");
+	int j;
+	for(i=0;i<numberOfStates;i++){
+		for(j=0;j<alphabetLength;j++){
+			printf("%d ",delta[i][j]);
+		}
+		printf("\n");
+	}
+	printf("\n");
+
 
     /*Translation setup*/
     char stringRead[MAX_LINE_LENGTH];
@@ -90,13 +102,13 @@ int main()
         int j = 0;
         while (characterRead != '\n' && j < alphabetLength) //for each column
         {
-            while (characterRead != ' ') //create the new string
+            while ((characterRead != ' ') && (characterRead != '\n')) //create the new string
             {
-                printf("%c\n", characterRead);               //TO-DO DELETE
-                strcat(stringRead, characterRead);           //add the character to the string
-                fscanf(automatonFile, "%c", &characterRead); // next character
+                char characterReadString[1] = {characterRead};
+                strcat(stringRead, characterReadString);           //add the character to the string	PETA PORQUE EL SEGUNDO PARÁMETRO HA DE SER UN STRING
+                fscanf(automatonFile,"%c", &characterRead); // next character
+               
             }
-
             if (stringRead == "_")
             {
                 strcpy(translationStrings[i][j], NULL);
@@ -105,24 +117,49 @@ int main()
             {
                 strcpy(translationStrings[i][j], stringRead);
             }
+            memset(stringRead, 0, MAX_LINE_LENGTH );		//Vaciamos el string
             j++;
             fscanf(automatonFile, "%c", &characterRead); // next character
         }
     }
+    
+    
+    
+    //Mostramos por pantalla el autómata de traducción
+  	printf("Automata de traduccion:\n");
+    for(i=0;i<numberOfStates;i++){
+    	for(j=0;j<alphabetLength;j++){
+    		printf("%s ",translationStrings[i][j]);
+		}
+		printf("\n");
+	}
+    
+    
 
     //Final states
     fscanf(automatonFile, "%c", &characterRead); // next character
     i = 0;
     while (characterRead != '\n' && i < numberOfStates)
     {
-        printf("%c\n", characterRead); //TO-DO DELETE
-        finalStates[i] = characterRead == '1' ? true : false;
+        finalStates[i] = characterRead == 't' ? true : false;
         i++;
         fscanf(automatonFile, "%c", &characterRead); // next character
     }
+    
+    //Mostrar por pantalla estados finales 
+    printf("\nEstados finales: ");
+    for(i=0;i<numberOfStates;i++){
+    	if(finalStates[i])
+    		printf("Q%d",i);
+	}
 
     fclose(automatonFile);
-    printf("\nAutómata configurado con éxito");
+    printf("\n\nAutomata configurado con exito\n\n");
+
+
+
+
+
 
     //Read word and translate
     char inputWord[MAX_LINE_LENGTH];
